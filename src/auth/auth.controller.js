@@ -13,6 +13,8 @@ export const register = async(req, res)=>{
         user.password = await encrypt(user.password)
         //Asignar rol por defecto
         user.role = 'USER'
+        //Asignar profilePicture
+        user.profilePicture = req.file?.filename ?? null //Nullish si es verdad lo de la izquierda, pone ese valor, sino pone el de la derecha
         //Guardar
         await user.save()
         //Responder al usuario

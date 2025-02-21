@@ -1,8 +1,7 @@
-//Validar datos relacionados a la base de datos
-
+//Validacion de datos relacionados a la base de datos
 import { isValidObjectId } from 'mongoose'
 import User from '../src/user/user.model.js'
-                                    //parametro | token | id(params)
+                                    
 export const existUsername = async(username, user)=>{
     const alreadyUsername = await User.findOne({username})
     if(alreadyUsername && alreadyUsername._id != user._id){

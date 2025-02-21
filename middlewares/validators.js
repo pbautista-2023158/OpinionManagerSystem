@@ -1,7 +1,7 @@
 //Validar campos en las rutas
 import { body } from "express-validator" 
 import { validateErrors, validateErrorsWithoutFiles } from "./validate.errors.js"
-import { existUsername, existEmail, notRequiredField} from "../utils/db.validators.js"
+import { existUsername, existEmail, notRequiredField } from "../utils/db.validators.js"
 
 //Arreglo de validaciones (por cada ruta)
 export const registerValidator = [
@@ -10,28 +10,31 @@ export const registerValidator = [
     body('surname', 'Surname cannot be empty')
         .notEmpty(),
     body('username', 'Username cannot be empty')
-        .notEmpty() 
-        .toLowerCase()
-        .custom(existUsername),  
+        .notEmpty()
+        .toLowerCase(),
     body('email', 'Email cannot be empty')
         .notEmpty()
         .isEmail()
-        .custom(existEmail),          
+        .custom(existEmail),  
+    body('username')
+        .notEmpty() 
+        .toLowerCase()
+        .custom(existUsername),  
     body('password', 'Password cannot be empty')
         .notEmpty()
         .isStrongPassword()
         .withMessage('Password must be strong')
         .isLength({min: 8})
-        .withMessage('Password need min 8 characteres'),
+        .withMessage('Password need min characteres'),
     body('phone', 'Phone cannot be empty')
         .notEmpty()
         .isMobilePhone(),
-    validateErrors //Si lleva parentesis es una funcion en ejecucion y si no es una referencia a una funcion
+    validateErrors //Referencia a una funcion
 ]
 
 export const updateUserValidator = [
     body('username')
-        .optional() //Parametro opcional, puede llegar como no puede llegar
+        .optional() 
         .notEmpty()
         .toLowerCase()
         .custom()
@@ -54,4 +57,22 @@ export const updateUserValidator = [
         .notEmpty()
         .custom(notRequiredField),
     validateErrorsWithoutFiles
+]
+
+export const saveCategoryValidator = [
+    body('name', 'Name cannot be empty')
+        .isLength({max: 35})
+        .notEmpty(),
+    body('description', 'Description cannot be empty')
+        .isLength({max: 100})
+        .notEmpty()
+]
+
+export const updateCategoryValidator = [
+    body('name', 'Name cannot be empty')
+        .isLength({max: 35})
+        .notEmpty(),
+    body('description', 'Description cannot be empty')
+        .isLength({max: 100})
+        .notEmpty()    
 ]

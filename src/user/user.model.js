@@ -24,14 +24,17 @@ const userSchema = Schema(
         email: {
             type: String,
             required: [true, 'Email is required'],
-            unique: [true, 'Email is already taken'],            
+            unique: [true, 'Email is already taken']           
         },
         password: {
             type: String,
             required: [true, 'Password is required'],
             minLength: [8, 'Password must be 8 characters'],
-            maxLength: [30, `Password can't be overcome 30 characters`]
+            maxLength: [100, `Password can't be overcome 100 characters`]
         },
+        profilePicture: {
+            type: String
+        },        
         phone: {
             type: String,
             required: [true, 'Phone is required'],
@@ -44,6 +47,10 @@ const userSchema = Schema(
             uppercase: true,
             enum: ['ADMIN', 'USER'] 
         }
+    },
+    {
+        versionKey: false, //Deshabilitar el __v(Versión del documento)
+        timestamps: true //Agrega propiedades de fecha (Fecha de creación y de ultima actualización)
     }
 )
 

@@ -94,27 +94,64 @@ export const updateId = async(req, res)=>{
     }   
 } 
 
-const agregarUsuarioAutomaticamente = async () => {
-    const usuariosExistentes = await User.countDocuments()
-    //user.password = await encrypt(user.password)    
-    if(usuariosExistentes === 0) {
-        const usuarioPorDefecto = [
+export const updateProfilePicture = async(req, res)=>{
+    try{
+        const { uid } = req.user
+        const { filename } = req.file
+        const user = await User.findByIdAndUpdate(
+            uid,
             {
-                name: "Pedro Sergio Javier",
-                surname: "Bautista Matheu",
-                username: "usuariodefault",
-                email: "correoinstitucional@kinal.edu.gt",
-                password: "Contrasenia!",
-                phone: "4967-0135",
-                role: "ADMIN"
+                ProfilePicture: filename
+            },
+            { new: true }
+        )
+        if(!user) return res.status(404).send(
+            {
+                succes: false,
+                message: 'User not found - not updated'
             }
-        ]
-        try{
-            await User.insertMany(usuarioPorDefecto)
-            console.log("Default user added")
-        }catch(error){
-            console.error("General error when adding the default user", error)
+        )
+        return res.send(
+            {
+                success: true,
+                message: 'User updated successfully',
+                user
+            }
+        )
+    }catch(err){
+        console.error('General error', err)
+        return res.status(500).send(
+            {
+                success: false,
+                message: 'General error',
+                err
+            }
+        )
+    }
+}
+
+const agregarUsuarioAutomaticamente = async () => {
+    try{
+        const adminExistente = await User.findOne({ role: "ADMIN" })
+        if (!adminExistente) {
+            const passwordEncrypt = await encrypt("Contraseña123*", 13)
+            const usuarioPorDefecto = new User( 
+                {
+                    name: "Pedro Sergio Javier",
+                    surname: "Bautista Matheu",
+                    username: "usuariodefault",
+                    email: "correoinstitucional@kinal.edu.gt",
+                    password: passwordEncrypt,
+                    phone: "4967-0135",
+                    role: "ADMIN",
+                    profilePicture: null
+                }
+            )
+            await usuarioPorDefecto.save()
+            console.log("Default admin added")
         }
+    }catch(error){
+        console.error("General error when adding the default user", error)
     }
 }
 
