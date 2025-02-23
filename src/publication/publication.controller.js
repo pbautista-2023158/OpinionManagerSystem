@@ -106,6 +106,7 @@ export const deletePublicaton = async(req, res) => {
                 }
             )
         }
+        Comment.deleteMany({comment:deletePublication._id})
         return res.send(
             {
                 success: true,

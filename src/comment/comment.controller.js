@@ -36,7 +36,10 @@ export const postComment = async(req, res) => {
         )
 
         const comment = new Comment(data)
+        comment.user = req.user.uid
         await comment.save()
+        publication.comments.push(comment._id)
+        await publication.save()
         return res.send(
             {
                 success: true, 
