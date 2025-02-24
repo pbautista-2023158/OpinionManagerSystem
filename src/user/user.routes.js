@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAll, getId, updateId, updateProfilePicture } from "./user.controller.js";
+import { getAll, getId, updateId, updatePassword, updateProfilePicture } from "./user.controller.js";
 import { validateJwt } from "../../middlewares/validate.jwt.js"
 import { updateUserValidator } from "../../middlewares/validators.js";
 import { uploadProfilePicture } from "../../middlewares/multer.uploads.js";
@@ -10,6 +10,7 @@ const api = Router()
 api.get("/", getAll); 
 api.get('/:id', getId)
 api.put('/:id', [validateJwt, updateUserValidator], updateId)
+api.put('/updatePassword/:id', validateJwt, updatePassword)
 api.put(
     '/updateProfilePicture/:id',
     [

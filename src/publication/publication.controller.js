@@ -2,7 +2,7 @@
 
 import User from '../user/user.model.js'
 import Category from '../category/category.model.js'
-import Comment from '../category/category.model.js'
+import Comment from '../comment/comment.model.js'
 import Publication from '../publication/publication.model.js'
 
 //Crear una publicacion
@@ -55,7 +55,35 @@ export const createPublication = async(req, res) => {
     }
 }
 
-//Actualizar un comentario
+//Obtener comentarios
+export const getComments = async(req, res) => {
+    try{
+        const { limit = 5, skip = 0} = req.query
+        const comments = await Publication.find()
+            .skip(skip)
+            .limit(limit)
+            if(!comments.length === 0){
+                return res.status(404).send(
+                    {
+                        success: false,
+                        message: 'Users not found'
+                    }
+                )
+            }
+            return res.send(
+                {
+                    success: true,
+                    message: 'Publications found',
+                    comments
+                }
+            )            
+    }catch(e){
+        console.error(e)
+        return res.status(500).send({message: 'General error', err})
+    }
+}
+
+//Actualizar una publicación
 export const updatePublication = async(req, res) => {
     try{
         const { id } = req.params
@@ -93,33 +121,43 @@ export const updatePublication = async(req, res) => {
     }
 }
 
-//Eliminar un comentario
-export const deletePublicaton = async(req, res) => {
-    try{
-        let { id } = req.params
-        let deletePublication = await Publication.findByIdAndDelete(id)     
-        if(!deletePublication.length === 0){
+//Eliminar una publicación
+export const deletePublication = async(req, res) => {
+    try {
+        const { id } = req.params
+        let deletePublication = await Publication.findById(id)
+       
+        if (!deletePublication.length === 0) {
             return res.status(404).send(
                 {
                     success: false,
                     message: 'Publication not found'
+            
                 }
             )
         }
-        Comment.deleteMany({comment:deletePublication._id})
+
+        await Comment.deleteMany(
+            { 
+                publication: id 
+            }
+        )
+
+        await Publication.findByIdAndDelete(id)
+
         return res.send(
             {
                 success: true,
-                message: 'Publication deleted',
+                message: 'Publication and its comments deleted successfully',
                 deletePublication
             }
-        )          
+        )
     }catch (err){
         console.error(err)
         return res.status(500).send(
             {
                 success: false,
-                message: 'General error when delete the publication',
+                message: 'General error when deleting the publication',
                 err
             }
         )

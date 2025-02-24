@@ -2,6 +2,7 @@
 import User from "../user/user.model.js";
 import { encrypt } from '../../utils/encryp.js'
 
+//Obtener usuarios
 export const getAll = async(req,res)=>{
     try{
         const { limit = 5, skip = 0} = req.query
@@ -30,6 +31,7 @@ export const getAll = async(req,res)=>{
     }
 }
 
+//Obtener usuario por id
 export const getId = async(req, res)=>{
     try{
         let { id } = req.params
@@ -59,6 +61,7 @@ export const getId = async(req, res)=>{
     }
 }
 
+//Actualizar usuario
 export const updateId = async(req, res)=>{
     try{
         const { id } = req.params
@@ -94,6 +97,7 @@ export const updateId = async(req, res)=>{
     }   
 } 
 
+//Actualizar foto de usuario
 export const updateProfilePicture = async(req, res)=>{
     try{
         const { uid } = req.user
@@ -130,6 +134,45 @@ export const updateProfilePicture = async(req, res)=>{
     }
 }
 
+//Actualizar la contraseña del usuario
+export const updatePassword = async(req, res) => {
+    try {
+      const { id } = req.params
+      const { newPassword } = req.body
+  
+      if (!newPassword) {
+        return res.status(400).send({ message: "New password is required" })
+      }
+  
+      const hashedPassword = await encrypt(newPassword)
+  
+      const user = await User.findByIdAndUpdate(
+        id,
+        { password: hashedPassword },
+        { new: true }
+      )
+  
+      if(!user) {
+        return res.status(404).send({ message: "User not found" })
+      }
+      return res.send(
+        {
+            success: true,
+            message: 'Password updated successfully'
+        }
+    )
+    }catch (err){
+        console.error('General error', err)
+        return res.status(500).send(
+            {
+                success: false,
+                message: 'General error',
+                err
+            }
+        )
+    }
+}
+
 const agregarUsuarioAutomaticamente = async () => {
     try{
         const adminExistente = await User.findOne({ role: "ADMIN" })
@@ -151,7 +194,7 @@ const agregarUsuarioAutomaticamente = async () => {
             console.log("Default admin added")
         }
     }catch(error){
-        console.error("General error when adding the default user", error)
+        console.error("General error when adding the default user", err)
     }
 }
 

@@ -1,5 +1,6 @@
 'use strict'
 
+import Publication from '../publication/publication.model.js'
 import Category from './category.model.js'
 
 //Crear una categoria
@@ -135,8 +136,9 @@ export const updateCategory = async(req, res) => {
 export const deleteCategory = async(req, res) => {
     try{
         let { id } = req.params
-        let deleteCategory = await Category.findByIdAndDelete(id)
-        if(!deleteCategory.length === 0){
+        let category = await Category.findById(id)
+        
+        if(!category.length === 0){
             return res.status(404).send(
                 {
                     success: false,
@@ -144,11 +146,16 @@ export const deleteCategory = async(req, res) => {
                 }
             )
         }
+
+        category.name = '#';
+        category.description = 'This category is not specified';
+        await category.save();
+
         return res.send(
             {
                 success: true,
                 message: 'Category deleted',
-                deleteCategory
+                category
             }
         )  
     }catch (err){
@@ -168,7 +175,7 @@ const agregarCategoriaAutomaticamente = async () => {
     if(categoriasExistentes === 0) {
         const categoriaPorDefecto = [
             {
-                name: "Arte",
+                name: "#Arte",
                 description: "Publicaciones dirigidas al medio artistico."
             }
         ]

@@ -1,3 +1,4 @@
+//Modelo de publicación
 import { Schema, model } from 'mongoose'
 
 const publicationSchema = Schema(

@@ -1,3 +1,4 @@
+//Modelo de comentario 
 import { Schema, model } from 'mongoose'
 
 const commentSchema = Schema(
@@ -6,6 +7,11 @@ const commentSchema = Schema(
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: [true, 'User is required']
+        },
+        publication: {
+            type: Schema.Types.ObjectId,
+            ref: 'Publication',
+            required: [true, 'Publication is required']
         },
         comment: {
             type: String,
